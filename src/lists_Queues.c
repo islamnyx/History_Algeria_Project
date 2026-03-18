@@ -237,10 +237,349 @@ Tlist* sortWord(Tlist *syn){
 //If No (0): We finished a whole trip without touching anything. The list is sorted!
 
 
+Tlist* sortWord2(Tlist* syn){
+      if(syn == NULL) return NULL;
+
+
+   int swapped ;
+   Tlist *ptr1;
+   Tlist *lptr = NULL;
+
+ do {
+   swapped = 0;
+   ptr1 = syn;
+
+   while(ptr1->next != lptr){
+
+    if(strlen(ptr1->name) > strlen(ptr1->next->name)){
+
+         //1. Swap Name 
+         char temp[100];
+         strcpy(temp , ptr1->name);
+         strcpy(ptr1->name, ptr1->next->name);
+         strcpy(ptr1->next->name,temp);
+
+        //2. Swap Dates of birth
+         date tempDob = ptr1->dob;
+                ptr1->dob = ptr1->next->dob;
+                ptr1->next->dob = tempDob;
+
+        //3. Swap Dates of Dead
+         date tempDod = ptr1->dod;
+                ptr1->dod = ptr1->next->dod;
+                ptr1->next->dod = tempDod;
+
+        //4. Swap Definition 
+        char tempDef[250];
+        strcpy(tempDef, ptr1->definition);
+        strcpy(ptr1->definition, ptr1->next->definition);
+        strcpy(ptr1->next->definition, tempDef);
+
+        swapped = 1;
+    }
+
+    ptr1 = ptr1->next;
+   }
+   lptr = ptr1;
+ } while (swapped);
+
+ return syn;
+}
+
+//same logique with sortword2 + change the condition inside if
+//sortword  : strcmp(ptr1->name,ptr1->next->name)> 0
+//sortword2 : strlen(ptr1->name) > strlen(ptr1->next->name)
+
+Tlist* sortPersonality(Tlist* syn){
+  
+      if(syn == NULL) return NULL;
+
+
+   int swapped ;
+   Tlist *ptr1;
+   Tlist *lptr = NULL;
+
+ do {
+   swapped = 0;
+   ptr1 = syn;
+
+   while(ptr1->next != lptr){
+      int age1 = ptr1->dod.year - ptr1->dob.year;
+      int age2 = ptr1->next->dod.year - ptr1->next->dob.year;
+
+    if(age1 > age2){
+
+         //1. Swap Name 
+         char temp[100];
+         strcpy(temp , ptr1->name);
+         strcpy(ptr1->name, ptr1->next->name);
+         strcpy(ptr1->next->name,temp);
+
+        //2. Swap Dates of birth
+         date tempDob = ptr1->dob;
+                ptr1->dob = ptr1->next->dob;
+                ptr1->next->dob = tempDob;
+
+        //3. Swap Dates of Dead
+         date tempDod = ptr1->dod;
+                ptr1->dod = ptr1->next->dod;
+                ptr1->next->dod = tempDod;
+
+        //4. Swap Definition 
+        char tempDef[250];
+        strcpy(tempDef, ptr1->definition);
+        strcpy(ptr1->definition, ptr1->next->definition);
+        strcpy(ptr1->next->definition, tempDef);
+
+        swapped = 1;
+    }
+
+    ptr1 = ptr1->next;
+   }
+   lptr = ptr1;
+ } while (swapped);
+
+ return syn;
+}
+
+
+Tlist* deletePersonality(FILE *f , Tlist *s , Tlist *a , char *name ){
+
+    // for linked list s
+  Tlist *curr = s , *prev = NULL;
+   while(curr!=NULL){
+    if(strcmp(curr->name , name ) == 0){
+      if(prev == NULL){
+        s = curr->next;
+      }else{
+         prev->next = curr->next;
+         free(curr);
+         break;
+      } 
+      prev = curr;
+      curr = curr->next;
+    }
+   }
+
+    // for linked list a
+  Tlist *currA = a , *prevA = NULL;
+   while(currA!=NULL){
+    if(strcmp(currA->name , name ) == 0){
+      if(prevA == NULL){
+        s = currA->next;
+      }else{
+         prevA->next = currA->next;
+         free(currA);
+         break;
+      } 
+      prevA = currA;
+      currA = currA->next;
+    }
+   }
+
+   // Updating the file 
+
+  fclose(f);
+  f = fopen("database.txt" , "w");
+  
+
+  Tlist *temp = s;
+    while (temp != NULL) {
+        // Writing it  in the format: Name=Definition=DoB=DoD
+        fprintf(f, "%s=%s=%d/%d/%d=%d/%d/%d\n", 
+                temp->name, temp->definition, 
+                temp->dob.day, temp->dob.month, temp->dob.year,
+                temp->dod.day, temp->dod.month, temp->dod.year);
+        temp = temp->next;
+    }
+  
+  return s;
+}
+
+Tlist* UpdatePersonality(FILE *f , Tlist *s , Tlist *a , char *name , char *definition , 
+                                 char *dob , char *dod ){
+  int d1 , m1 , y1 , d2 ,m2 ,y2;
+   Tlist *currS = s;
+   Tlist *currA = a;
+
+  sscanf(dob , "%d/%d/%d/" , &d1 , &m1 , &y1);
+  sscanf(dod , "%d/%d/%d/" , &d2 , &m2 , &y2);
+
+   //Updating the main list (s)
+    while(currS != NULL){
+      if(strcmp(currS->name , name) == 0){
+         strcpy(currS->definition, definition);
+            currS->dob = (date){d1, m1, y1};
+            currS->dod = (date){d2, m2, y2};
+            break;
+    }
+    currS = currS->next;
+  }
+  
+  //Updating the Date list (a)  
+    while(currA != NULL){
+      if(strcmp(currA->name , name) == 0){
+         strcpy(currA->definition, definition);
+            currA->dob = (date){d1, m1, y1};
+            currA->dod = (date){d2, m2, y2};
+            break;
+    }
+    currA = currA->next;
+  }
+
+  fclose(f);
+  f = fopen("database.txt", "w");
+  if(f == NULL) return s;
+
+ Tlist *temp = s;
+ while(temp != NULL){
+  fprintf(f, "%s=%s=%02d/%02d/%d=%02d/%02d/%d\n", 
+                temp->name, temp->definition, 
+                temp->dob.day, temp->dob.month, temp->dob.year,
+                temp->dod.day, temp->dod.month, temp->dod.year);
+        temp = temp->next;
+    }
+  return s;
+
+}
+
+
+//! This function is essentially a Filter. It scans your main list and 
+//! picks out anyone who "matches" a specific year provided by the user.
+
+Tlist* similarPersonality(Tlist *s , char *word){
+   Tlist *resultList = NULL;
+   int targetYear = atoi(word);
+   //! atoi()  converts string into integer 
+
+   Tlist *curr = s;
+   while(curr != NULL){
+     if(curr->dob.year == targetYear || curr->dod.year == targetYear ){
+         Tlist *newnode = (Tlist*)malloc(sizeof(Tlist));
+               strcpy(newnode->name, curr->name);
+               strcpy(newnode->definition, curr->definition);
+               newnode->dob = curr->dob;
+               newnode->dod = curr->dod;
+                
+               // here we are inserting at the beginning 
+               newnode->next = resultList;
+               resultList = newnode;
+     }
+     curr = curr->next;
+   } 
+   return resultList;
+}
 
 
 
+Tlist* countPersonality(Tlist *s , date *prt){
+   Tlist *results = NULL;
+   Tlist *curr = s;
+   int matchBirth;
+   int matchDeath;
 
+   while (curr != NULL){
+
+       matchBirth = (curr->dob.day == prt->day && 
+                          curr->dob.month == prt->month && 
+                          curr->dob.year == prt->year);
+                        
+       matchDeath = (curr->dod.day == prt->day && 
+                          curr->dod.month == prt->month && 
+                          curr->dod.year == prt->year);
+    
+       if(matchBirth || matchDeath){
+
+   
+            Tlist *newNode = (Tlist*)malloc(sizeof(Tlist));
+            
+           
+            strcpy(newNode->name, curr->name);
+            strcpy(newNode->definition, curr->definition);
+            newNode->dob = curr->dob;
+            newNode->dod = curr->dod;
+
+           
+            newNode->next = results;
+            results = newNode;
+       }
+       curr = curr->next;
+   }
+   return results;
+}
+
+//! TList* palindromeName(TList *s)
+
+//! TList* mergeNodes(TList *s, TList *a)
+
+//! TList* merge2Nodes(TList *s, TList *a)
+
+
+Tlist* addPersonality(Tlist *s , Tlist *a , char *name ,char *definition,  char *dob , char *dod){
+  
+  // create new node
+  Tlist *newnode = (Tlist*)malloc(sizeof(Tlist));
+  strcpy(newnode->name , name );
+  strcpy(newnode->definition , definition);
+  sscanf(dob , "%d/%d/%d" , &newnode->dob.day , &newnode->dob.month , &newnode->dob.year);
+  sscanf(dod , "%d/%d/%d" , &newnode->dod.day , &newnode->dod.month , &newnode->dod.year);
+
+  //adding to the head of the  first linked list 
+  newnode->next = s;
+  s = newnode ;
+
+  //adding to the head of the second linked list 
+
+  Tlist *newnodeA = (Tlist*)malloc(sizeof(Tlist));
+     *newnodeA = *newnode ;
+      newnodeA->next = a;
+      a = newnodeA;
+
+  // Updating our file
+
+  FILE *f = fopen("database.txt", "a");
+  if(f != NULL){
+
+    fprintf(f, "%s=%s=%s=%s\n", name , definition , dob , dod);
+    fclose(f);
+  }
+return s;
+}
+
+
+Tlist* addEvents(Tlist *b , char *nameEvente , char *date){
+   // Creating new node 
+     Tlist *newnode = (Tlist*)malloc(sizeof(Tlist)); 
+     strcpy(newnode->name , nameEvente);
+     strcpy(newnode->definition , "Historical Event");
+
+     sscanf(date , "%d/%d/%d" , &newnode->dob.day , &newnode->dob.month , &newnode->dob.year);
+
+     newnode->dod.day = 0;
+     newnode->dod.month =0;
+     newnode->dod.year = 0;
+ 
+
+   // adding at the head of the second linked list 
+
+   newnode->next = b;
+   b = newnode ;
+
+
+   //Updating the text file
+
+   FILE *f = fopen("database.txt", "a");
+   if(f != NULL){
+
+    fprintf(f, "%s=Historical Event=%s=00/00/0000\n", nameEvente , date);
+    fclose(f);
+   }
+  return b;
+}
+
+
+
+  
 
 
 
