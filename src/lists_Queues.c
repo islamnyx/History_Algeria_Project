@@ -2,6 +2,8 @@
 #include "structs.h"
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+
 
 
 void printList(Tlist *head){
@@ -508,11 +510,136 @@ Tlist* countPersonality(Tlist *s , date *prt){
    return results;
 }
 
+int isPalindrome(char *str){
+
+   int left = 0;
+   int right = strlen(str) - 1;
+
+  while(right > left){
+    if(tolower(str[left] != tolower(str[right]))){
+      return 0;
+    }
+    left++;
+    right--;
+  }
+return 1;
+}
+
 //! TList* palindromeName(TList *s)
+Tlist* palindromeName(Tlist *s){
+
+  Tlist *newlist = NULL;
+  Tlist *current = s;
+
+  while (current != NULL){
+
+    if(isPalindrome(current->name)){
+
+      //create new node 
+      Tlist *newnode = (Tlist*)malloc(sizeof(Tlist));
+      strcpy(newnode->name, current->name);
+      newnode->next = NULL;
+
+      //Sorting 
+      if(newlist == NULL || strcmp(newnode->name , newlist->name)< 0){
+        newnode->next = newlist;
+        newlist = newnode;
+        //strcmp(newnode->name , newlist->name)< 0
+        /*
+        If the first string is smaller (comes first in the alphabet)
+                   , it returns a negative number (<0).
+        */
+
+      }else{
+        Tlist *temp = newlist;
+        while(temp->next != NULL || strcmp(temp->next->name , newnode->name) < 0 ){
+            temp = temp->next;
+         }
+
+        newnode->next = temp->next;
+        temp->next = newnode;
+
+    }
+  }
+  current = current->next;   
+ }
+return newlist;
+}
 
 //! TList* mergeNodes(TList *s, TList *a)
 
+TBilist* mergeNodes(Tlist *s , Tlist *a){
+  if (s == NULL || a == NULL) return NULL;
+  TBilist *head = NULL;
+  TBilist *tail = NULL;
+  Tlist *currS = s;
+  Tlist *currA = a;
+
+  while(currS != NULL && currA != NULL){
+
+    TBilist *newnode = (TBilist*)malloc(sizeof(TBilist));
+      //copy data from the Personality list
+    strcpy(newnode->name , currS->name);
+    strcpy(newnode->definition , currS->definition);
+      //copy data from the Dates list 
+    newnode->dob = currA->dob;
+    newnode->dod = currA->dod;
+
+    newnode->next = NULL;
+
+    if(head == NULL){
+      newnode->prev = NULL;
+      head = newnode;
+      tail = newnode;
+    }else{
+      tail->next = newnode;
+      newnode->prev = tail;
+      tail = newnode;
+    }
+
+    currS = currS->next;
+    currA = currA->next;
+  }
+  
+
+return head;
+
+}
+
 //! TList* merge2Nodes(TList *s, TList *a)
+Tlist* merge2Nodes(Tlist *s , Tlist *a){
+  if (s == NULL || a == NULL) return NULL;
+  Tlist *head = NULL;
+  Tlist *tail = NULL;
+  Tlist *currS = s;
+  Tlist *currA = a;
+
+  while(currS != NULL && currA != NULL){
+
+    Tlist *newnode = (Tlist*)malloc(sizeof(Tlist));
+      //copy data from the Personality list
+    strcpy(newnode->name , currS->name);
+    strcpy(newnode->definition , currS->definition);
+      //copy data from the Dates list 
+    newnode->dob = currA->dob;
+    newnode->dod = currA->dod;
+
+    if(head == NULL){
+      head = newnode;
+      tail = newnode;
+      newnode->next = head;
+    }else{
+      tail->next = newnode;
+      tail = newnode;
+      tail->next = head;
+    }
+
+    currS = currS->next;
+    currA = currA->next;
+  }
+
+return head;
+}
 
 
 Tlist* addPersonality(Tlist *s , Tlist *a , char *name ,char *definition,  char *dob , char *dod){
