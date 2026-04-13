@@ -806,3 +806,31 @@ void enqueue(TQueue *q , char *name , char *definition , date dob , date dod){
    }
 
 }
+
+TBilist* insertBilist(TBilist *head, char *name, char *definition, date dob, date dod){
+    TBilist *newNode = (TBilist*)malloc(sizeof(TBilist));
+    strcpy(newNode->name ,name);
+    strcpy(newNode->definition ,definition);
+
+    newNode->dob = dob;
+    newNode->dod = dod;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+
+    if(head == NULL){
+      return newNode;
+
+    }
+
+    TBilist *current = head;
+    while(current->next != NULL){
+      current = current->next;
+
+    }
+
+     current->next = newNode;
+     newNode->prev = current;
+
+     return head;
+
+}

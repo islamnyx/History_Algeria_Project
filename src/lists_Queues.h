@@ -30,6 +30,6 @@ TQueue* sName(Tlist *s);
 
 
 void enqueue(TQueue *q , char *name , char *definition , date dob , date dod);
-
+TBilist* insertBilist(TBilist *head, char *name, char *definition, date dob, date dod);
 #endif
 

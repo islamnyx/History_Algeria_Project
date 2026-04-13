@@ -36,6 +36,9 @@ typedef struct {
    QNode *tail; 
 } TQueue;
 
+typedef struct {
+    Tlist *top;
+} TStack;
 
 
 
