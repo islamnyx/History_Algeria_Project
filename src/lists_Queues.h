@@ -24,6 +24,12 @@ Tlist* countPersonality(Tlist *s , date *prt);
 Tlist* addPersonality(Tlist *s , Tlist *a , char *name ,char *definition,  char *dob , char *dod);
 Tlist* addEvents(Tlist *b , char *nameEvente , char *date);
 
+TQueue* toQueue(Tlist *merged);
+TQueue* sName(Tlist *s);
+
+
+
+void enqueue(TQueue *q , char *name , char *definition , date dob , date dod);
 
 #endif
 

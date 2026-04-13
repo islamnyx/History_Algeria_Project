@@ -705,10 +705,104 @@ Tlist* addEvents(Tlist *b , char *nameEvente , char *date){
 }
 
 
+int countWords(char *str){
+    int count = 0;
+    int i = 0;
+    if(str[0] == '\0') return 0;
 
+    while(str[i] != '\0'){
+       if(str[i] == ' ' && str[i+1] != ' ' && str[i+1] != '\0'){
+          count++;
+       }
+      i++;
+    }
+return count + 1;
+}
+
+//! TQueue* sName(TList *s)
+TQueue* sName(Tlist *s){
+  TQueue* q = (TQueue*)malloc(sizeof(TQueue));
+  q->head = q->tail = NULL;
+
+  if(s == NULL) return q;
+
+  Tlist *curr;
+  Tlist *tempS = s;
+
+}
   
+//! TQueue* ageP(TList *a)
+//!
+//!
+//!
+//!
+//!
+//!
+//!
+//!
+//!
+//!
+//!
+
+
+//! TQueue* toQueue(TList *merged)
+TQueue* toQueue(Tlist *merged){
+
+  TQueue* q = (TQueue*)malloc(sizeof(TQueue));
+  q->head = NULL;
+  q->tail = NULL;
+
+  if(merged == NULL)  return q;
+
+
+  Tlist *current = merged;
+    // Note: If 'merged' came from merge2Nodes, it is circular. 
+    // We need to handle the loop termination correctly.
+  Tlist *startNode = merged ;
+
+  do{
+   QNode* newnode = (QNode*)malloc(sizeof(QNode));
+   strcpy(newnode->name , current->name);
+   strcpy(newnode->definition , current->definition);
+
+    newnode->dob = current->dob;
+    newnode->dod = current->dod;
+    newnode->next = NULL;
+
+
+    if(q->tail == NULL){
+      q->head = q->tail = newnode;
+    }else{
+     q->tail->next = newnode;
+     q->tail = newnode;
+    }
+    
+    current = current->next;
+
+
+  } while(current != NULL && current != startNode);
+
+return q;
+}
 
 
 
+void enqueue(TQueue *q , char *name , char *definition , date dob , date dod){
+   QNode *newNode = (QNode*)malloc(sizeof(QNode));
+   strcpy(newNode->name , name);
+   strcpy(newNode->definition , definition);
 
+   newNode->dob = dob;
+   newNode->dod = dod;
+   newNode->next = NULL;
 
+   if(q->tail == NULL){
+    q->head = newNode;
+    q->tail = newNode;
+
+   }else{
+    q->tail->next = newNode;
+    q->tail = newNode;
+   }
+
+}
