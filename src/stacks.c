@@ -336,3 +336,34 @@ bool isPersonalityKilled(char *word){
     }
     return false ;
 }
+
+//! Helper Function 
+
+void insertAtBottom(TStack *stk , Tlist *node){
+    if(isEmpty(stk)){
+        node->next = NULL;
+        stk->top = node;
+        return;
+    }
+
+    Tlist *current = stk->top;
+    while(current->next != NULL){
+        current = current->next;
+    }
+    node->next = NULL;
+    current->next = node;
+
+}
+
+TStack* recRevStack(TStack *stk){
+    if(isEmpty(stk)){
+        return(stk);
+    }
+
+    Tlist *top = pop(stk);
+    stk = recRevStack(stk);
+    insertAtBottom(stk, top);
+
+    return stk;
+
+}

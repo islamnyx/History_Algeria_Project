@@ -1,3 +1,7 @@
+#ifndef STRUCTS_H
+#define STRUCTS_H
+
+
 #include <stdio.h>
 
 typedef struct {
@@ -40,7 +44,7 @@ typedef struct {
     Tlist *top;
 } TStack;
 
-
+#endif
 
 
 
