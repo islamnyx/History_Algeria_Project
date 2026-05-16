@@ -83,7 +83,7 @@ Tlist* getDatePersonality(FILE *f){
     char  tempName[100];
     int dob, dod;
 
-     if(sscanf(buffer , "%[^=]=%[^=]=%d=%d", tempName, &dob ,&dod) == 3){
+    if(sscanf(buffer , "%[^=]=%*[^=]=%d=%d", tempName, &dob, &dod) == 3){
         Tlist *newnode = (Tlist*)malloc(sizeof(Tlist));
         if(newnode == NULL){
             printf("Memory allocation failed!");
@@ -345,57 +345,51 @@ Tlist* sortPersonality(Tlist* syn){
 }
 
 
-Tlist* deletePersonality(FILE *f , Tlist *s , Tlist *a , char *name ){
+Tlist* deletePersonality(FILE *f, Tlist *s, Tlist *a, char *name) {
 
     // for linked list s
-  Tlist *curr = s , *prev = NULL;
-   while(curr!=NULL){
-    if(strcmp(curr->name , name ) == 0){
-      if(prev == NULL){
-        s = curr->next;
-      }else{
-         prev->next = curr->next;
-         free(curr);
-         break;
-      } 
-      prev = curr;
-      curr = curr->next;
+    Tlist *curr = s, *prev = NULL;
+    while(curr != NULL){
+        if(strcmp(curr->name, name) == 0){
+            Tlist *toFree = curr;
+            if(prev == NULL) s = curr->next;
+            else prev->next = curr->next;
+            free(toFree);
+            break;
+        }
+        prev = curr;
+        curr = curr->next;
     }
-   }
 
     // for linked list a
-  Tlist *currA = a , *prevA = NULL;
-   while(currA!=NULL){
-    if(strcmp(currA->name , name ) == 0){
-      if(prevA == NULL){
-        s = currA->next;
-      }else{
-         prevA->next = currA->next;
-         free(currA);
-         break;
-      } 
-      prevA = currA;
-      currA = currA->next;
+    Tlist *currA = a, *prevA = NULL;
+    while(currA != NULL){
+        if(strcmp(currA->name, name) == 0){
+            Tlist *toFree = currA;
+            if(prevA == NULL) a = currA->next;
+            else prevA->next = currA->next;
+            free(toFree);
+            break;
+        }
+        prevA = currA;
+        currA = currA->next;
     }
-   }
 
-   // Updating the file 
+    // Updating the file
+    fclose(f);
+    f = fopen("database.txt", "w");
 
-  fclose(f);
-  f = fopen("database.txt" , "w");
-  
-
-  Tlist *temp = s;
-    while (temp != NULL) {
-        // Writing it  in the format: Name=Definition=DoB=DoD
-        fprintf(f, "%s=%s=%d/%d/%d=%d/%d/%d\n", 
-                temp->name, temp->definition, 
+    Tlist *temp = s;
+    while(temp != NULL){
+        fprintf(f, "%s=%s=%d/%d/%d=%d/%d/%d\n",
+                temp->name, temp->definition,
                 temp->dob.day, temp->dob.month, temp->dob.year,
                 temp->dod.day, temp->dod.month, temp->dod.year);
         temp = temp->next;
     }
-  
-  return s;
+
+    fclose(f);
+    return s;
 }
 
 Tlist* UpdatePersonality(FILE *f , Tlist *s , Tlist *a , char *name , char *definition , 
@@ -516,7 +510,7 @@ int isPalindrome(char *str){
    int right = strlen(str) - 1;
 
   while(right > left){
-    if(tolower(str[left] != tolower(str[right]))){
+   if(tolower(str[left]) != tolower(str[right])){
       return 0;
     }
     left++;
@@ -552,7 +546,7 @@ Tlist* palindromeName(Tlist *s){
 
       }else{
         Tlist *temp = newlist;
-        while(temp->next != NULL || strcmp(temp->next->name , newnode->name) < 0 ){
+        while(temp->next != NULL && strcmp(temp->next->name , newnode->name) < 0 ){
             temp = temp->next;
          }
 
@@ -627,11 +621,10 @@ Tlist* merge2Nodes(Tlist *s , Tlist *a){
     if(head == NULL){
       head = newnode;
       tail = newnode;
-      newnode->next = head;
+      newnode->next = NULL;
     }else{
       tail->next = newnode;
       tail = newnode;
-      tail->next = head;
     }
 
     currS = currS->next;
@@ -719,7 +712,8 @@ int countWords(char *str){
 return count + 1;
 }
 
-//! TQueue* sName(TList *s)
+
+
 TQueue* sName(Tlist *s){
   TQueue* q = (TQueue*)malloc(sizeof(TQueue));
   q->head = q->tail = NULL;
